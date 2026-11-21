@@ -1,12 +1,12 @@
 import type { Line, Standing } from "./credit";
-import { TIERS, type Tier } from "./tiers";
+import { RANKS, type Rank } from "./tiers";
 
 /* A person's progress over time, built from their credit ledger: every dated gain or loss in order, the running total
-   after each, the moments they reached a new tier, and a day-by-day line for the graph. Only earned credit counts:
+   after each, the moments they reached a new rank (every division: Bronze 1, Bronze 2 ...), and a day-by-day line for the graph. Only earned credit counts:
    stakes held, commission rewards set aside and gifts change what someone can spend, not what they have earned.
    Amounts are today's values: a project that has faded with age shows what it counts for now. */
 export type Moment = { at: number; what: string; why: string; n: number; total: number; pid?: number; shipped?: boolean };
-export type Reached = { at: number; tier: Tier };
+export type Reached = { at: number; tier: Rank };
 export type Progress = { moments: Moment[]; reached: Reached[]; points: { d: number; v: number }[]; step: number };
 
 const IST = 19800, DAY = 86400;
@@ -27,10 +27,10 @@ export function progressOf(s: Pick<Standing, "ledger">, today: number): Progress
     total += p.n;
     if (p.shipped) shipped++;
     moments.push({ ...p, total: Math.max(0, total) });
-    // A tier is reached the first time both its credit and its shipped projects are met. Tiers are never lost here:
+    // A rank is reached the first time both its credit and its shipped projects are met. Ranks are never lost here:
     // the history shows when each was first reached, even if credit later dipped.
-    for (let i = reachedIdx + 1; i < TIERS.length; i++) {
-      if (Math.max(0, total) >= TIERS[i].min && shipped >= TIERS[i].shipped) { reached.push({ at: p.at, tier: TIERS[i] }); reachedIdx = i; }
+    for (let i = reachedIdx + 1; i < RANKS.length; i++) {
+      if (Math.max(0, total) >= RANKS[i].min && shipped >= RANKS[i].shipped) { reached.push({ at: p.at, tier: RANKS[i] }); reachedIdx = i; }
       else break;
     }
   }

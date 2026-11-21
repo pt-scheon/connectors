@@ -10,17 +10,38 @@ const DAY = 86400, T0 = Math.floor(Date.UTC(2026, 5, 1) / 1000);
 
 test("tiers: credit sets the rank, and from Gold up shipped projects are needed too", async () => {
   const { tierFor } = await import("../lib/tiers");
-  assert.equal(tierFor(0, 0).tier.name, "Rookie");
-  assert.equal(tierFor(49, 0).tier.name, "Rookie");
-  assert.equal(tierFor(50, 0).tier.name, "Bronze");
-  assert.equal(tierFor(160, 1).tier.name, "Silver");
-  assert.equal(tierFor(400, 1).tier.name, "Silver", "400 credit but one shipped project is not Gold");
-  assert.equal(tierFor(400, 2).tier.name, "Gold");
-  assert.equal(tierFor(5000, 8).tier.name, "Legend");
-  const silver = tierFor(250, 1);
-  assert.deepEqual(silver.needs, ["50 more credit", "1 more shipped project"]);
+  assert.equal(tierFor(0, 0).tier.name, "Rookie 1");
+  assert.equal(tierFor(49, 0).tier.name, "Rookie 5");
+  assert.equal(tierFor(50, 0).tier.name, "Bronze 1");
+  assert.equal(tierFor(160, 1).tier.name, "Silver 1");
+  assert.equal(tierFor(400, 1).tier.name, "Silver 5", "400 credit but one shipped project is not Gold");
+  assert.equal(tierFor(400, 2).tier.name, "Gold 3");
+  assert.equal(tierFor(5000, 8).tier.name, "Legend 5");
+  const silver = tierFor(290, 1);
+  assert.equal(silver.next?.name, "Gold 1");
+  assert.deepEqual(silver.needs, ["10 more credit", "1 more shipped project"]);
   assert.ok(silver.progress >= 0 && silver.progress <= 0.5, "progress counts the part that is further behind");
   assert.equal(tierFor(5000, 8).next, null);
+});
+
+test("tiers: five divisions in every tier, Bronze 2 to Bronze 3 and Bronze 5 to Silver 1", async () => {
+  const { tierFor, RANKS, TIERS, DIVISIONS } = await import("../lib/tiers");
+  assert.equal(DIVISIONS, 5);
+  assert.equal(RANKS.length, TIERS.length * 5);
+  for (const t of TIERS) assert.deepEqual(RANKS.filter((r) => r.id === t.id).map((r) => r.division), [1, 2, 3, 4, 5], t.name);
+  assert.ok(RANKS.every((r, i) => i === 0 || r.min > RANKS[i - 1].min), "every division needs more credit than the one below");
+  assert.deepEqual(RANKS.filter((r) => r.id === "bronze").map((r) => r.min), [50, 70, 90, 110, 130]);
+  const b2 = tierFor(70, 0);
+  assert.equal(b2.tier.name, "Bronze 2");
+  assert.equal(b2.tier.id, "bronze", "the id stays the tier's, for its colours and emblem");
+  assert.equal(b2.next?.name, "Bronze 3");
+  assert.deepEqual(b2.needs, ["20 more credit"]);
+  assert.equal(tierFor(89, 0).progress, 0.95);
+  const b5 = tierFor(149, 0);
+  assert.equal(b5.tier.name, "Bronze 5");
+  assert.equal(b5.next?.name, "Silver 1");
+  assert.equal(b5.tierIndex, 1);
+  assert.equal(tierFor(150, 0).tier.name, "Silver 1");
 });
 
 test("history: earned lines in date order with a running total; held credit and gifts left out", async () => {
@@ -34,7 +55,9 @@ test("history: earned lines in date order with a running total; held credit and 
   ];
   const p = progressOf({ ledger }, T0 + 60 * DAY);
   assert.deepEqual(p.moments.map((m) => [m.what, m.n, m.total]), [["Starter credit", 20, 20], ["Accurate reviews", 3, 23], ["P shipped", 40, 63], ["Accurate reviews", 3, 66]]);
-  assert.deepEqual(p.reached.map((r) => [r.tier.name, r.at]), [["Bronze", T0 + 30 * DAY]], "Bronze is reached on the day the total passes 50");
+  assert.deepEqual(p.reached.map((r) => [r.tier.name, r.at]),
+    [["Rookie 2", T0], ["Rookie 3", T0], ["Rookie 4", T0 + 30 * DAY], ["Rookie 5", T0 + 30 * DAY], ["Bronze 1", T0 + 30 * DAY]],
+    "every division is reached on the day the total passes it; Bronze 1 on the day it passes 50");
   assert.equal(p.points[p.points.length - 1].v, 66, "the graph ends at today's earned credit");
   assert.equal(p.points[0].v, 20);
   assert.ok(p.points.every((x, i) => i === 0 || x.d > p.points[i - 1].d));

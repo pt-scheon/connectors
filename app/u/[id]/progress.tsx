@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Standing } from "@/lib/credit";
-import { TIERS, tierFor } from "@/lib/tiers";
+import { RANKS, TIERS, tierFor } from "@/lib/tiers";
 import { dayOf, progressOf } from "@/lib/progress";
 import { LineChart } from "../../admin/analytics/chart";
 import { TierBadge } from "../../tier-badge";
@@ -27,7 +27,7 @@ export function ProgressTab({ s, first, self, graph, base, label, today }: {
   const commissions = s.ledger.filter((l) => l.what.startsWith("Commission done:")).length;
   const finish = s.shipped + s.left ? Math.round((s.shipped / (s.shipped + s.left)) * 100) : null;
   // Newest first, grouped by month, with the tiers reached placed where they happened.
-  type Row = { at: number; kind: "move"; what: string; why: string; n: number; total: number } | { at: number; kind: "tier"; tier: (typeof TIERS)[number] };
+  type Row = { at: number; kind: "move"; what: string; why: string; n: number; total: number } | { at: number; kind: "tier"; tier: (typeof RANKS)[number] };
   const rows: Row[] = [
     ...pr.moments.map((m) => ({ at: m.at, kind: "move" as const, what: label(m.what, m.pid), why: m.why, n: m.n, total: m.total })),
     ...pr.reached.map((r) => ({ at: r.at, kind: "tier" as const, tier: r.tier })),
@@ -58,13 +58,13 @@ export function ProgressTab({ s, first, self, graph, base, label, today }: {
         ) : <span className="small">The top rank. Nothing above it.</span>}
         <ol className="rank-ladder" aria-label="All ranks">
           {TIERS.map((t, i) => (
-            <li key={t.id} className={i === st.index ? "now" : i < st.index ? "done" : ""}>
-              <TierBadge tier={t} size={30} dim={i > st.index} />
-              <span className="small"><b>{t.name}</b><br /><span className="muted">{t.min ? `${t.min}+` : "Start"}{t.shipped ? `, ${t.shipped} shipped` : ""}</span></span>
+            <li key={t.id} className={i === st.tierIndex ? "now" : i < st.tierIndex ? "done" : ""}>
+              <TierBadge tier={i === st.tierIndex ? st.tier : t} size={30} dim={i > st.tierIndex} />
+              <span className="small"><b>{i === st.tierIndex ? st.tier.name : t.name}</b><br /><span className="muted">{t.min ? `${t.min}+` : "Start"}{t.shipped ? `, ${t.shipped} shipped` : ""}</span></span>
             </li>
           ))}
         </ol>
-        <span className="small muted">Ranks come only from earned credit, which only verified work gives. From Gold up they also need shipped projects. <Link href="/rules">How credit works</Link></span>
+        <span className="small muted">Ranks come only from earned credit, which only verified work gives. Each tier has five divisions, 1 to 5: Bronze 5 moves up to Silver 1. From Gold up they also need shipped projects. <Link href="/rules">How credit works</Link></span>
       </section>
 
       <section className="card stack" aria-labelledby="graph-h">

@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "seed": "tsx scripts/seed.ts",
+    "seed": "tsx scripts/seed.ts && node scripts/sample-art.js",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test scripts/test.ts scripts/feed.test.ts scripts/clubs.test.ts scripts/proofcheck.test.ts scripts/camera.test.ts scripts/teamchat.test.ts scripts/identity.test.ts scripts/progress.test.ts"
+    "test": "tsx --test scripts/test.ts scripts/feed.test.ts scripts/clubs.test.ts scripts/proofcheck.test.ts scripts/camera.test.ts scripts/teamchat.test.ts scripts/identity.test.ts scripts/progress.test.ts scripts/public.test.ts",
+    "export-data": "tsx scripts/export-data.ts",
+    "sample-art": "node scripts/sample-art.js",
+    "dev:showcase": "npm --prefix frontend run dev"
   },
   "dependencies": {
     "@google/genai": "^3.2.0",

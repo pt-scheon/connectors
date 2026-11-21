@@ -952,6 +952,7 @@ body:not(.guest) .foot{background:transparent}
 .tier-badge .tb-back{fill:var(--tb1)}
 .tier-badge .tb-face{fill:var(--tb2)}
 .tier-badge .tb-mark{color:#fff;fill:#fff}
+.tier-badge .tb-pip{fill:var(--tb1)} .tier-badge .tb-pip.on{fill:#fff}
 .tier-badge.dim{opacity:.32;filter:grayscale(.6)}
 .tier-rookie{--tb1:#6e6e73;--tb2:#a1a1a6}
 .tier-bronze{--tb1:#8a4f22;--tb2:#c27c43}

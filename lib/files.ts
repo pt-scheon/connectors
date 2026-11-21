@@ -80,3 +80,11 @@ export function remove(key: string | null | undefined) {
 export const sizeText = (n: number) => (n < 1024 * 1024 ? `${Math.max(1, Math.round(n / 1024))} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`);
 
 export const maxFor = (k: Kind) => (k === "image" ? LIMITS.imageBytes : k === "video" ? LIMITS.videoBytes : k === "voice" ? LIMITS.voiceBytes : LIMITS.fileBytes);
+
+/* Uploads are only ever JPEG, PNG, GIF or WebP (sniff, above). The drawn pictures of the sample data are SVG, so they
+   go out with a policy that lets them draw and nothing else, even when opened on their own. */
+export function imageHeaders(mime: string | null, cache: string): HeadersInit {
+  const h: Record<string, string> = { "Content-Type": mime || "image/jpeg", "Cache-Control": cache, "X-Content-Type-Options": "nosniff" };
+  if (mime === "image/svg+xml") h["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
+  return h;
+}

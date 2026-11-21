@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { get } from "@/lib/db";
-import { read } from "@/lib/files";
+import { imageHeaders, read } from "@/lib/files";
 
 export const dynamic = "force-dynamic";
 
@@ -16,5 +16,5 @@ export async function GET(_req: Request, { params }: { params: Promise<{ key: st
   }
   const bytes = read(key);
   if (!bytes) return new Response("Not found", { status: 404 });
-  return new Response(new Uint8Array(bytes), { headers: { "Content-Type": u.photo_mime || "image/jpeg", "Cache-Control": u.anon ? "private, no-store" : "public, max-age=86400", "X-Content-Type-Options": "nosniff" } });
+  return new Response(new Uint8Array(bytes), { headers: imageHeaders(u.photo_mime, u.anon ? "private, no-store" : "public, max-age=86400") });
 }
