@@ -974,3 +974,24 @@ body:not(.guest) .foot{background:transparent}
 .rank-chip:hover{text-decoration:none;filter:brightness(1.08)}
 /* Project icons are images now: the team's own, or a cover drawn from the name */
 img.picon.pimg{object-fit:cover;background:var(--sunk);padding:0}
+
+/* ================= Showcase skin (frontend/): near-black warmed with red, one red accent, light display type =================
+   Laid over every theme, so the app reads as the same product as the public showcase. */
+:root:root:root{
+  color-scheme: dark;
+  --bg:#0f0000; --surface:#1c0a09; --surface2:#24100e; --sunk:#160605; --pill:#2c1513; --pill-hover:#3b1d1a;
+  --ink:#ffffff; --muted:#b8a9a7; --line:#3a1f1c; --line2:#4b2a26; --silver:#9c8b89;
+  --accent:#ff3b2f; --accent-ink:#ffffff; --accent-soft:rgba(255,59,47,.18);
+  --mark:#ff3b2f; --mark-ink:#ffffff; --info:#ff3b2f;
+  --shadow:none; --shadow-pop:0 14px 44px rgba(0,0,0,.6); --bar:rgba(15,0,0,.78);
+}
+html:root body{
+  background:
+    radial-gradient(90% 55% at 20% -12%, rgba(255,60,40,.38), transparent 62%),
+    radial-gradient(70% 40% at 100% 0%, rgba(200,20,10,.22), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+html:root h1{ font-weight:300; letter-spacing:-.045em; }
+html:root h2{ font-weight:400; letter-spacing:-.03em; }
+html:root ::selection{ background:#ff0000; color:#fff; }
