@@ -12,7 +12,7 @@ let configured = false;
 function setup() {
   if (configured || !pushReady()) return configured;
   // The push services ask for a contact; the project's public page is enough and shares no one's email.
-  webpush.setVapidDetails(process.env.VAPID_SUBJECT || "https://github.com/pt-scheon/connectors", process.env.VAPID_PUBLIC_KEY!, process.env.VAPID_PRIVATE_KEY!);
+  webpush.setVapidDetails(process.env.VAPID_SUBJECT || (process.env.CONTACT_EMAIL ? `mailto:${process.env.CONTACT_EMAIL}` : process.env.APP_URL || "http://localhost:4000"), process.env.VAPID_PUBLIC_KEY!, process.env.VAPID_PRIVATE_KEY!);
   return (configured = true);
 }
 

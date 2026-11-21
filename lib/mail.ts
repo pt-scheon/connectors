@@ -1,7 +1,7 @@
 import nodemailer, { type Transporter } from "nodemailer";
 import { get } from "./db";
 
-const baseUrl = () => process.env.APP_URL || "http://localhost:3000";
+const baseUrl = () => process.env.APP_URL || "http://localhost:4000";
 /* Same limiter idea as notify.allow, kept here so the two files do not import each other. */
 const sent = new Map<number, number[]>();
 function underLimit(id: number) {

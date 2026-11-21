@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 /* "Bring Connect to your college". Posts to this site's /api/interest, which forwards to the backend stub
@@ -20,7 +21,7 @@ export function InterestForm({ signin }: { signin: string }) {
   }
   if (state === "done") return (
     <p className="form-done" role="status">
-      Thanks. Requests like this are not saved yet, so the quickest way in is still to <a href={signin}>sign in with your college email</a>: colleges on academic domains (.edu, .ac.in) open the moment the first student proves one.
+      Thanks. Requests like this are not saved yet, so the quickest way in is still to <Link href={signin}>sign in with your college email</Link>: colleges on academic domains (.edu, .ac.in) open the moment the first student proves one.
     </p>
   );
   return (

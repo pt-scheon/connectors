@@ -114,16 +114,16 @@ test("the board's Fits you filter matches a role to the skills a person listed",
 
 test("a college email only counts for the college that owns that domain", async () => {
   const { matchCollege, onDomain, isPublicMail, isAcademic, baseDomain } = await import("../lib/domains");
-  const colleges = [{ id: 1, domains: "nirmauni.ac.in" }, { id: 2, domains: "iitb.ac.in,iitb.edu" }, { id: 3, domains: "cse.nirmauni.ac.in" }];
-  assert.equal(matchCollege("nirmauni.ac.in", colleges)?.id, 1);
-  assert.equal(matchCollege("students.nirmauni.ac.in", colleges)?.id, 1, "a subdomain belongs to its college");
-  assert.equal(matchCollege("cse.nirmauni.ac.in", colleges)?.id, 3, "the most specific domain wins");
-  assert.equal(matchCollege("fakenirmauni.ac.in", colleges), undefined, "a lookalike domain is not the college");
-  assert.equal(matchCollege("nirmauni.ac.in.evil.com", colleges), undefined, "a domain that only starts the same is not the college");
+  const colleges = [{ id: 1, domains: "dau.ac.in" }, { id: 2, domains: "iitb.ac.in,iitb.edu" }, { id: 3, domains: "cse.dau.ac.in" }];
+  assert.equal(matchCollege("dau.ac.in", colleges)?.id, 1);
+  assert.equal(matchCollege("students.dau.ac.in", colleges)?.id, 1, "a subdomain belongs to its college");
+  assert.equal(matchCollege("cse.dau.ac.in", colleges)?.id, 3, "the most specific domain wins");
+  assert.equal(matchCollege("fakedau.ac.in", colleges), undefined, "a lookalike domain is not the college");
+  assert.equal(matchCollege("dau.ac.in.evil.com", colleges), undefined, "a domain that only starts the same is not the college");
   assert.equal(matchCollege("iitb.edu", colleges)?.id, 2);
-  assert.ok(!onDomain("xnirmauni.ac.in", "nirmauni.ac.in"));
-  assert.ok(isPublicMail("gmail.com") && isPublicMail("yahoo.co.in") && !isPublicMail("nirmauni.ac.in"));
-  assert.ok(isAcademic("nirmauni.ac.in") && isAcademic("mit.edu") && isAcademic("unimelb.edu.au") && !isAcademic("somecollege.com"));
+  assert.ok(!onDomain("xdau.ac.in", "dau.ac.in"));
+  assert.ok(isPublicMail("gmail.com") && isPublicMail("yahoo.co.in") && !isPublicMail("dau.ac.in"));
+  assert.ok(isAcademic("dau.ac.in") && isAcademic("mit.edu") && isAcademic("unimelb.edu.au") && !isAcademic("somecollege.com"));
   assert.equal(baseDomain("students.mit.edu"), "mit.edu");
   assert.equal(baseDomain("mit.edu"), "mit.edu");
 });
@@ -310,7 +310,7 @@ test("credibility starts in the middle and moves with what a person does, never 
   // Everything a person can type about themselves.
   const snap = () => { const s = compute().get(quitter)!; return [s.credit, s.earned, s.cred.score].join(); };
   const was = snap();
-  run("UPDATE users SET skills='React, Rust, ML, PCB design', about='10x founder', github='https://github.com/torvalds', linkedin='https://linkedin.com/in/x', branch='CSE' WHERE id=?", quitter);
+  run("UPDATE users SET skills='React, Rust, ML, PCB design', about='10x founder', github='https://github.com/example-quitter', linkedin='https://linkedin.com/in/x', branch='CSE' WHERE id=?", quitter);
   for (let i = 0; i < 10; i++) run("INSERT INTO claims (user_id, text) VALUES (?,?)", quitter, "Won everything");
   run("UPDATE members SET did='Built all of it', role='Chief architect' WHERE user_id=?", quitter);
   assert.equal(snap(), was);
@@ -934,7 +934,7 @@ test("a college domain that cannot receive email is caught before a code is sent
   assert.equal(await domainTakesMail("college.example", fails("ETIMEOUT")), true);
 });
 
-/* ---------- rating lab: P0 to P8 (docs/rating-lab/COLLAB.md) ---------- */
+/* ---------- rating rules: P0 to P8 ---------- */
 
 test("P0: an honest team that ships and vouches for each other is not a ring; the same closed group shipping again and again is", async () => {
   const { compute, user, project, vouch, RULES } = await setup();

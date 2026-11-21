@@ -4,6 +4,8 @@ import { RULES } from "./rules";
 import { label } from "./skills";
 import { RANKS, TIERS, tierFor, type Rank, type Tier } from "./tiers";
 import { progressOf } from "./progress";
+import { isMember } from "./college";
+import { unreadMessages } from "./chat";
 
 /* Read-only data for the public showcase site (../frontend), served as JSON from app/api/public/*.
 
@@ -28,16 +30,16 @@ const SHIPPED = "p.status='shipped' AND p.hidden=0 AND c.status='active'";
 const NAMED = "COALESCE(u.anon,0)=0"; // people who may be tied to a project by name
 
 /* The picture to show, as a path on Connect: an uploaded photo, the anonymous pattern, or none (initials). */
-function avatar(u: Row): string | null {
+export function avatar(u: Row): string | null {
   if (u.anon) return `/api/identicon/${encodeURIComponent(String(u.alias || u.name))}`;
   if (u.photo_key) return `/api/avatar/${u.photo_key}`;
   return null;
 }
 
 /* A rank as the API shows it: `id` is the tier (colours, emblem), `division` 1 to 5 within it, `name` both ("Bronze 3"). */
-const tierRef = (t: Rank) => ({ id: t.id, key: t.key, division: t.division, tier: t.tierName, name: t.name, note: t.note });
+export const tierRef = (t: Rank) => ({ id: t.id, key: t.key, division: t.division, tier: t.tierName, name: t.name, note: t.note });
 const majorRef = (t: Tier) => ({ id: t.id, name: t.name, note: t.note });
-function rank(st: Pick<Standing, "earned" | "shipped">) {
+export function rank(st: Pick<Standing, "earned" | "shipped">) {
   const r = tierFor(Math.round(st.earned), st.shipped);
   return { ...tierRef(r.tier), next: r.next ? { ...tierRef(r.next), progress: Math.round(r.progress * 100) / 100, needs: r.needs } : null };
 }
@@ -197,9 +199,10 @@ export function builder(id: number) {
 
 /* The Progress tab, as a signed-out visitor sees it: earned credit over time, ranks reached, the latest moves.
    A private or hidden project's name reads "A private project", as on Connect. */
-function history(id: number, st: Standing) {
-  const secret = new Map<number, string>(
-    all("SELECT p.id, p.name FROM members m JOIN projects p ON p.id=m.project_id WHERE m.user_id=? AND p.hidden<>0", id).map((p) => [p.id as number, String(p.name)]));
+export function history(id: number, st: Standing, hidePrivate = true) {
+  // `hidePrivate` is false only for a person reading their own record, who may see their own private projects' names.
+  const secret = new Map<number, string>(hidePrivate ?
+    all("SELECT p.id, p.name FROM members m JOIN projects p ON p.id=m.project_id WHERE m.user_id=? AND p.hidden<>0", id).map((p) => [p.id as number, String(p.name)]) : []);
   const mask = (what: string, pid?: number) => (pid && secret.has(pid) ? what.replace(secret.get(pid)!, "A private project") : what);
   const pr = progressOf(st, now());
   const day = (d: number) => new Date(d * 86400 * 1000).toISOString().slice(0, 10);
@@ -244,5 +247,11 @@ export function account(u: Row | null) {
     college: c ? { slug: c.slug as string, name: c.name as string } : null,
     earned: Math.round(st.earned), shipped: st.shipped,
     rank: u.verified && u.role === "student" ? rank(st) : null,
+    // What the showcase's own pages need to decide where to send them and what to badge.
+    member: isMember(u), admin: !!u.admin,
+    unread: {
+      inbox: (get("SELECT COUNT(*) n FROM notifications WHERE user_id=? AND seen=0", u.id)?.n ?? 0) as number,
+      messages: isMember(u) ? unreadMessages(u.id) : 0,
+    },
   };
 }

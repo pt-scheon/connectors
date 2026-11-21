@@ -5,12 +5,14 @@ import localFont from "next/font/local";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Motion } from "@/components/motion";
+import { SessionProvider } from "@/components/session";
 import { api, app, APP_URL } from "@/lib/api";
 
 /* The hero wordmark is set in Broadway when the visitor's computer has it (it ships with Microsoft Office, and its
    licence doesn't allow bundling). Everyone else gets Fascinate, a free Art Deco face in the same spirit (OFL, app/fonts). */
 const deco = localFont({ src: "./fonts/fascinate.woff2", variable: "--font-deco", display: "swap", weight: "400" });
 import "./globals.css";
+import "./account.css";
 
 export const metadata: Metadata = {
   title: { default: "Connect — credit only for what ships", template: "%s — Connect" },
@@ -32,15 +34,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en-IN" className={`${GeistSans.variable} ${GeistMono.variable} ${deco.variable}`}>
       <body>
-        <Header items={[
-          { href: "/work", label: "work", count: n.work },
-          { href: "/colleges", label: "colleges", count: n.colleges },
-          { href: "/builders", label: "builders", count: n.builders },
-          { href: app.signin, label: "join", external: true, cta: true },
-        ]} appUrl={APP_URL} />
-        <main id="main">{children}</main>
-        <Footer />
-        <Motion />
+        <SessionProvider appUrl={APP_URL}>
+          <Header items={[
+            { href: "/work", label: "work", count: n.work },
+            { href: "/colleges", label: "colleges", count: n.colleges },
+            { href: "/builders", label: "builders", count: n.builders },
+            { href: app.signin, label: "join", cta: true },
+          ]} />
+          <main id="main">{children}</main>
+          <Footer />
+          <Motion />
+        </SessionProvider>
       </body>
     </html>
   );

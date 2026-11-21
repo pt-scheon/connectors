@@ -15,7 +15,7 @@ export function Av({ u, lg }: { u: Row; lg?: boolean }) {
   if (u.picture) return <img className={cls} src={u.picture} alt="" title={u.name} referrerPolicy="no-referrer" />;
   return <span className={cls} title={u.name} style={{ background: AVATAR[Math.abs(Number(u.id) || 0) % AVATAR.length] }}>{initials(u.name)}</span>;
 }
-/* Apple's system colours, deepened a little so white initials stay readable (4.5:1 or better). */
+/* The accent colours, deepened a little so white initials stay readable (4.5:1 or better). */
 export const AVATAR = ["#0071e3", "#1f7a35", "#c93400", "#8944ab", "#d30f45", "#5856d6", "#0071a4", "#b25000"];
 /* A project's icon, like an app icon: the image its team uploaded (or had AI make), else a cover drawn from its
    name (app/api/cover). Decorative only. */

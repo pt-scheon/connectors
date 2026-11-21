@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 4000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 4000",
     "seed": "tsx scripts/seed.ts && node scripts/sample-art.js",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test scripts/test.ts scripts/feed.test.ts scripts/clubs.test.ts scripts/proofcheck.test.ts scripts/camera.test.ts scripts/teamchat.test.ts scripts/identity.test.ts scripts/progress.test.ts scripts/public.test.ts",
     "export-data": "tsx scripts/export-data.ts",
+    "test": "tsx --test scripts/test.ts scripts/feed.test.ts scripts/clubs.test.ts scripts/proofcheck.test.ts scripts/camera.test.ts scripts/teamchat.test.ts scripts/identity.test.ts scripts/progress.test.ts scripts/public.test.ts scripts/account.test.ts",
     "sample-art": "node scripts/sample-art.js",
     "dev:showcase": "npm --prefix frontend run dev"
   },

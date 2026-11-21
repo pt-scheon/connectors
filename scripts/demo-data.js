@@ -1,5 +1,6 @@
-/* Made-up demo data for the TEST site: about 60 colleges (the IITs, the NITs, Manipal, BITS and others), students with
-   profiles, projects at every stage, reviews, vouches, skills confirmed by teammates, and clubs.
+/* Made-up demo data for the TEST site: about 70 colleges (the IITs, the NITs, Manipal, BITS and others), students with
+   profiles, projects at every stage, reviews, vouches, skills confirmed by teammates, and clubs. Every made-up person
+   and project also gets a drawn picture (scripts/sample-art.js).
 
      node scripts/demo-data.js [database file]           add it (does nothing if it is already there)
      node scripts/demo-data.js [database file] --wipe    remove every made-up person, project, club and college
@@ -119,6 +120,10 @@ function remove() {
   const pids = db.prepare(`SELECT id FROM projects WHERE lead_id IN (SELECT id FROM users WHERE sub LIKE 'demo:%')`).all().map((r) => r.id);
   const cids = db.prepare(`SELECT id FROM clubs WHERE lead_id IN (SELECT id FROM users WHERE sub LIKE 'demo:%')`).all().map((r) => r.id);
   const inList = (xs) => (xs.length ? xs.join(",") : "-1");
+  // Their drawn pictures (scripts/sample-art.js) go with them.
+  const uploads = require("node:path").join(require("node:path").dirname(require("node:path").resolve(file)), "uploads");
+  const keys = [...db.prepare(`SELECT photo_key k FROM users WHERE id IN (${inList(ids)})`).all(), ...db.prepare(`SELECT image_key k FROM projects WHERE id IN (${inList(pids)})`).all()];
+  for (const { k } of keys) if (k && /^[A-Za-z0-9_-]{24}$/.test(k)) require("node:fs").rmSync(require("node:path").join(uploads, k), { force: true });
   db.transaction(() => {
     for (const t of ["members", "milestones", "proofs", "project_skills", "member_skills", "reviews", "review_log", "updates", "roles", "follows", "comments", "requests", "allocations", "review_invites", "live_checks", "proof_checks", "project_seen"])
       try { db.exec(`DELETE FROM ${t} WHERE project_id IN (${inList(pids)})`); } catch { /* table not in this version */ }
@@ -213,6 +218,8 @@ function add() {
     }
   })();
   console.log(`Added ${opened} colleges, ${people} made-up people, ${projects} projects and ${clubs} clubs.`);
+  const drawn = require("./sample-art").fill(db, file);
+  console.log(`Drew ${drawn.people} profile pictures and ${drawn.projects} project images.`);
 }
 
 guard();

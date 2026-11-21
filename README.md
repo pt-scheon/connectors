@@ -4,13 +4,8 @@ A network of colleges where students build projects together. Each college is it
 
 ## Run it locally
 
-```bash
-npm install
-npm run seed   # wipes the local database and adds invented sample people and projects
-npm run dev
-```
-
-Open http://localhost:3000 and pick a sample person on the sign-in page. That list only exists in development.
+Run everything from the repository root (see the README there): `npm run setup`, then `npm run dev`, then open
+http://localhost:3000.
 
 ## Going live
 
@@ -41,7 +36,7 @@ Data lives in one SQLite file, so the host needs a persistent disk. A `Dockerfil
 
 ```bash
 docker build -t connect .
-docker run -p 3000:3000 -v connect-data:/data --env-file .env.local connect
+docker run -p 4000:3000 -v connect-data:/data --env-file .env.local connect
 ```
 
 Railway, Fly.io and Render all build this Dockerfile directly. Attach a volume at `/data`. Serverless hosts such as Vercel will not keep the data without moving to a hosted database.
@@ -97,7 +92,6 @@ npm run build
 - `app/landing.tsx` the public home page
 - `app/**/page.tsx` the screens
 - `scripts/seed.ts` sample data, `scripts/test.ts` tests
-- `prototype/connect.html` the first clickable mock-up
 
 ## Not built yet
 

@@ -10,10 +10,10 @@ export function Footer() {
         <Clock />
         <span className="mono">© {new Date().getFullYear()} Connect</span>
         <nav className="footer-links mono" aria-label="Legal">
-          <a href={app.rules}>Credit rules</a>
-          <a href={app.privacy}>Privacy</a>
-          <a href={app.terms}>Terms</a>
-          <a href={app.cookies}>Cookies</a>
+          <Link href={app.rules}>Credit rules</Link>
+          <Link href={app.privacy}>Privacy</Link>
+          <Link href={app.terms}>Terms</Link>
+          <Link href={app.cookies}>Cookies</Link>
           <Link href="/colleges">Colleges</Link>
         </nav>
       </div>

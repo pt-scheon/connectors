@@ -94,7 +94,7 @@ export default async function Onboarding({ searchParams }: { searchParams: Promi
             <span>You signed in as <b>{email}</b>.{known ? <> That is a {known.name} address.</> : <> @{d} is new on Connect.</>}</span>
             {!known && (
               <label className="field"><span>Your community&rsquo;s full name</span>
-                <input type="text" name="college_name" id="signin-college-name" placeholder="e.g. Nirma University or Acme Labs" minLength={3} maxLength={80} required />
+                <input type="text" name="college_name" id="signin-college-name" placeholder="e.g. Dhirubhai Ambani University or Acme Labs" minLength={3} maxLength={80} required />
                 <small>{isAcademic(d) ? "Academic domain: your community opens straight away." : "The Connect team checks new non-academic domains before the community opens."}</small></label>
             )}
             <div><button className="btn">{known ? `Join ${known.name}` : "Add my community and join"}</button></div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { api, app, monthYear, pad2 } from "@/lib/api";
+import { api, monthYear, pad2 } from "@/lib/api";
 import { Avatar } from "@/components/avatar";
 import { TierBadge } from "@/components/tier";
 import { ProgressChart } from "@/components/progress-chart";
@@ -116,9 +116,6 @@ export default async function BuilderPage({ params }: Props) {
           <ul className="plain-list">{b.clubs.map((c) => <li key={c.name} className="plain-link"><span>{c.name}</span><span className="mono muted">{c.role}</span></li>)}</ul>
         </section>
       )}
-      <section className="sec dark tight-top">
-        <a className="btn-line mono-btn" href={b.anonymous ? app.me(b.id) : app.profile(b.id)}>Full record on Connect <span aria-hidden="true">→</span></a>
-      </section>
     </>
   );
 }

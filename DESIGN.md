@@ -2,7 +2,7 @@
 
 The live look of Connect, written down from `app/globals.css` and `app/public.css`. If this file and the CSS disagree, the CSS is right and this file should be fixed.
 
-**Direction:** Apple-style, as on apple.com and in Apple's Human Interface Guidelines. That means the system font, calm neutral surfaces, one blue for actions, Apple's system colours as accents, soft rounded shapes, a pill for every selection, and very light shadows. The user picked it after comparing it live, side by side, with the earlier look.
+**Direction:** calm and quiet. The system font, neutral surfaces, one blue for actions, a small set of bright accent colours for status, soft rounded shapes, a pill for every selection, and very light shadows.
 
 ## 1. Principles
 
@@ -47,7 +47,7 @@ In dark mode, primary buttons use the deeper `#0071e3` rather than `#0a84ff`, so
 
 ### System palette (accents)
 
-These are Apple's system colours, for status badges, project icons, figures and progress. Fills use the base colour. Text uses the `-t` shade.
+These are the accent colours, for status badges, project icons, figures and progress. Fills use the base colour. Text uses the `-t` shade.
 
 | Name | Fill, dark / light | Text (`-t`), dark / light |
 |---|---|---|
@@ -89,7 +89,7 @@ These are Apple's system colours, for status badges, project icons, figures and 
   - `--display`: SF Pro Display, then Helvetica Neue and Arial.
   - `--body`: SF Pro Text.
   - `--code`: SF Mono and Menlo, for code only.
-- **Numbers:** figures, times and credit use the text font with `font-variant-numeric: tabular-nums`, as apple.com does. Never monospace.
+- **Numbers:** figures, times and credit use the text font with `font-variant-numeric: tabular-nums`. Never monospace.
 - **Body:** 16px, line height 1.47, letter spacing -0.01em, antialiased.
 - **Headings:** weight 600, line height 1.1, balanced wrapping.
 

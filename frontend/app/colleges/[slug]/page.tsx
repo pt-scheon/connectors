@@ -31,7 +31,7 @@ export default async function CollegePage({ params }: Props) {
         <h2 className="title" data-reveal>Shipped here</h2>
         <div className="work-list">{c.shipped.map((p, i) => <ProjectCard key={p.id} p={p} index={i} />)}</div>
         {c.shipped.length === 0 && <p className="lead">Nothing shipped yet.</p>}
-        <div className="sec-end start"><a className="btn-line mono-btn" href={app.signin}>Join {c.name} <span aria-hidden="true">→</span></a></div>
+        <div className="sec-end start"><Link className="btn-line mono-btn" href={app.signin}>Join {c.name} <span aria-hidden="true">→</span></Link></div>
       </section>
     </>
   );

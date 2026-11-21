@@ -22,7 +22,7 @@ export default async function Colleges() {
             </Link>
           </li>
         ))}
-        <li className="row muted"><span className="row-main"><span className="row-title">Yours isn’t here?</span><span className="row-sub">A college on an academic domain opens the first time a student proves an email on it. <a href={app.signin}>Sign in to start yours.</a></span></span></li>
+        <li className="row muted"><span className="row-main"><span className="row-title">Yours isn’t here?</span><span className="row-sub">A college on an academic domain opens the first time a student proves an email on it. <Link href={app.signin}>Sign in to start yours.</Link></span></span></li>
       </ol>
     </section>
   );

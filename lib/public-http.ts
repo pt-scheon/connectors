@@ -38,11 +38,11 @@ export function trusted(origin: string | null): string | null {
   return null;
 }
 
-export function credentialed(req: Request): Record<string, string> {
+export function credentialed(req: Request, methods = "GET, POST, OPTIONS"): Record<string, string> {
   const o = trusted(req.headers.get("origin"));
   return {
     ...(o ? { "Access-Control-Allow-Origin": o, "Access-Control-Allow-Credentials": "true" } : {}),
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Methods": methods,
     "Access-Control-Allow-Headers": "Content-Type",
     "Cache-Control": "private, no-store",
     Vary: "Origin, Cookie",

@@ -4,12 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AccountMenu } from "./account-menu";
+import { useSession } from "./session";
 
 type Item = { href: string; label: string; count?: number; external?: boolean; cta?: boolean };
 
-export function Header({ items, appUrl }: { items: Item[]; appUrl: string }) {
+export function Header({ items }: { items: Item[] }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { me } = useSession();
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -24,8 +26,10 @@ export function Header({ items, appUrl }: { items: Item[]; appUrl: string }) {
       <Link href="/" className="wordmark" aria-label="Connect showcase, home">connect<span className="wordmark-dot" aria-hidden="true" /></Link>
       <div className="header-right">
         <nav id="site-nav" className="site-nav" aria-label="Main">
-          {items.map((it) => {
-            const active = !it.external && (it.href === "/" ? pathname === "/" : pathname.startsWith(it.href));
+          {items.map((raw) => {
+            // The "join" button becomes a way back to your own profile once you are signed in (or to finishing setting up).
+            const it = raw.cta && me ? (me.onboarded ? { ...raw, href: "/me", label: "profile" } : { ...raw, href: "/onboarding", label: "set up" }) : raw;
+            const active = !it.external && (it.href === "/" ? pathname === "/" : pathname === it.href || pathname.startsWith(`${it.href}/`));
             const cls = `nav-link${it.cta ? " nav-cta" : ""}`;
             const body = <>{it.label}{it.count !== undefined && <sup>({it.count})</sup>}</>;
             return it.external
@@ -33,7 +37,7 @@ export function Header({ items, appUrl }: { items: Item[]; appUrl: string }) {
               : <Link key={it.href} href={it.href} className={cls} aria-current={active ? "page" : undefined}>{body}</Link>;
           })}
         </nav>
-        <AccountMenu appUrl={appUrl} />
+        <AccountMenu />
         <button className="menu-btn" aria-expanded={open} aria-controls="site-nav" onClick={() => setOpen((v) => !v)}>
           <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
           <span className="menu-lines" aria-hidden="true" />

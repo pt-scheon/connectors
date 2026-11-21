@@ -56,7 +56,7 @@ export default async function ProjectPage({ params }: Props) {
         </ol>
       </section>
       <section className="sec dark tight-top">
-        <a className="btn-line mono-btn" href={app.college(p.college.slug)}>See {p.college.name} on Connect <span aria-hidden="true">→</span></a>
+        <Link className="btn-line mono-btn" href={app.college(p.college.slug)}>See {p.college.name} <span aria-hidden="true">→</span></Link>
       </section>
     </article>
   );

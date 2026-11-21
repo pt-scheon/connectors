@@ -4,7 +4,10 @@ data
 .env*
 !.env.example
 .git
+# In this repository the app is at the top and the website sits in frontend/; neither the website nor the
+# research folders belong in the app's image.
+frontend
 prototype
 .claude
 buildathon
-prototype
+docs

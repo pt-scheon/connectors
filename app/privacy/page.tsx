@@ -40,7 +40,7 @@ export default function Privacy() {
       </ul>
 
       <h2>Cookies</h2>
-      <p>One cookie keeps you signed in, one remembers light or dark mode, one remembers a device you chose to trust at sign-in, two last a few minutes while you sign in, and one remembers your answer to the cookie notice. No tracking or advertising cookies. The full list, with how long each lasts, is on the <Link href="/cookies">Cookies</Link> page.</p>
+      <p>One cookie keeps you signed in, one remembers light or dark mode, one remembers a device you chose to trust at sign-in, three last a few minutes while you sign in, and one remembers your answer to the cookie notice. No tracking or advertising cookies. The full list, with how long each lasts, is on the <Link href="/cookies">Cookies</Link> page.</p>
 
       <h2>Your choices</h2>
       <ul>

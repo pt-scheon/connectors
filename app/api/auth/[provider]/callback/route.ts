@@ -5,16 +5,21 @@ import { get } from "@/lib/db";
 import { autoVerify, baseUrl, recordLogin, setSession, upsertUser } from "@/lib/auth";
 import { allow, deviceName, ipOf, notify } from "@/lib/notify";
 import { PROVIDERS, callbackUrl, ready } from "@/lib/oauth";
+import { NEXT_COOKIE, arrival, cleanNext, landing } from "@/lib/return-to";
 import { CODE_MINUTES, needsCode, pendingToken, sendLoginCode } from "@/lib/twostep";
 
-/* Step 2: the provider sends the person back with a code. Swap it for their name, email and photo. */
+/* Step 2: the provider sends the person back with a code. Swap it for their name, email and photo.
+   If the sign-in was started from the showcase, every way out of here (success, a second step, a failure) goes back to
+   the showcase, to the page of the same name (/signin, /signin/verify, /onboarding); see lib/return-to.ts. */
 export async function GET(req: NextRequest, { params }: { params: Promise<{ provider: string }> }) {
-  const fail = (msg: string) => NextResponse.redirect(new URL("/signin?err=" + encodeURIComponent(msg), baseUrl()));
+  const jar = await cookies();
+  const next = cleanNext(jar.get(NEXT_COOKIE)?.value);
+  jar.delete(NEXT_COOKIE);
+  const fail = (msg: string) => NextResponse.redirect(landing(next, "/signin?err=" + encodeURIComponent(msg)));
   const p = PROVIDERS[(await params).provider];
   if (!p || !ready(p)) return fail("That sign-in is not set up yet.");
   if (!allow(`authcb:${ipOf(req)}`, 30, 600)) return fail("Too many sign-in tries. Wait a few minutes.");
   const q = req.nextUrl.searchParams;
-  const jar = await cookies();
   const state = jar.get("oauth_state")?.value;
   jar.delete("oauth_state");
   if (q.get("error")) return fail(`${p.label} sign-in was cancelled.`);
@@ -58,9 +63,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ prov
     if (!allow(`2fa:${id}`, 5, 900)) return fail("Too many sign-in codes requested. Wait fifteen minutes.");
     if (!(await sendLoginCode(u))) return fail("We could not email your sign-in code. Try again in a minute.");
     jar.set("pending", pendingToken(id), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: CODE_MINUTES * 60 });
-    return NextResponse.redirect(new URL("/signin/verify", baseUrl()));
+    return NextResponse.redirect(landing(next, "/signin/verify"));
   }
   recordLogin(id, deviceName(req.headers.get("user-agent")), notify);
   await setSession(id);
-  return NextResponse.redirect(new URL("/", baseUrl()));
+  return NextResponse.redirect(arrival(next, !!u.onboarded));
 }

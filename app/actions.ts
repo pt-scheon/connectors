@@ -1341,7 +1341,7 @@ export async function saveCollege(fd: FormData) {
   const name = s("name", 80);
   const domains = s("domains", 300).toLowerCase().split(/[\s,]+/).filter(Boolean);
   if (name.length < 3 || !domains.length || domains.some((d) => !/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(d) || isPublicMail(d)))
-    fail("Give a name and at least one college or company email domain, like nirmauni.ac.in. Personal mail domains are not allowed.");
+    fail("Give a name and at least one college or company email domain, like dau.ac.in. Personal mail domains are not allowed.");
   for (const d of domains) {
     const other = get("SELECT name FROM colleges WHERE id<>? AND (',' || domains || ',') LIKE ?", c.id, `%,${d},%`);
     if (other) fail(`${d} already belongs to ${other.name}.`);
@@ -1359,7 +1359,7 @@ export async function createCollege(fd: FormData) {
   const name = s("name", 80);
   const domains = s("domains", 300).toLowerCase().split(/[\s,]+/).map((d) => d.replace(/^@/, "")).filter(Boolean);
   if (name.length < 3 || !domains.length || domains.some((d) => !/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(d) || isPublicMail(d)))
-    fail("Give a name and at least one college or company email domain, like nirmauni.ac.in. Personal mail domains are not allowed.");
+    fail("Give a name and at least one college or company email domain, like dau.ac.in. Personal mail domains are not allowed.");
   for (const d of domains) {
     const other = get("SELECT name FROM colleges WHERE (',' || domains || ',') LIKE ?", `%,${d},%`);
     if (other) fail(`${d} already belongs to ${other.name}.`);

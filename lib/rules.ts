@@ -1,5 +1,5 @@
 /* Every number in the credit, competency, credibility and commission rules lives here. Change them in one place.
-   The reasoning behind each one is in docs/rating-design.md. */
+   The comment on each one says why it is set where it is. */
 export const RULES = {
   // ---- credit ----
   starter: 20, // given once the college email is verified

@@ -36,7 +36,9 @@ const nextConfig: NextConfig = {
   // Builds a self-contained server in .next/standalone for the Dockerfile.
   output: "standalone",
   poweredByHeader: false,
-  // Dev only: lets http://127.0.0.1:3000 load scripts as well as localhost.
+  // Don't write an AGENTS.md into the project on every `next dev`.
+  agentRules: false,
+  // Dev only: lets http://127.0.0.1:4000 load scripts as well as localhost.
   allowedDevOrigins: ["127.0.0.1", "*.localhost"],
   // Forms can carry one proof file (a certificate or letter, up to 5 MB).
   experimental: { serverActions: { bodySizeLimit: "6mb" } },

@@ -1,7 +1,9 @@
 /* Typed client for Connect's read-only public API (backend: app/api/public/*, data rules in lib/public.ts).
    Every page calls these on the server, so the browser never talks to the backend directly. */
 
-const API = (process.env.CONNECT_API_URL || "http://localhost:3000").replace(/\/$/, "");
+import type { RulesDoc } from "./account-types";
+
+const API = (process.env.CONNECT_API_URL || "http://localhost:4000").replace(/\/$/, "");
 export const APP_URL = (process.env.NEXT_PUBLIC_CONNECT_APP_URL || API).replace(/\/$/, "");
 const REVALIDATE = Number(process.env.REVALIDATE_SECONDS || 60);
 
@@ -53,7 +55,6 @@ export type BuilderDetail = Omit<Builder, "tier"> & {
   progress: Progress | null;
 };
 export type Skill = { skill: string; projects: number };
-export type SignedLine = { builder: { id: number; name: string; avatar: Avatar }; role: string; did: string; project: { id: number; name: string }; shippedAt: string | null; signedBy: number };
 
 export class ApiError extends Error {
   constructor(public status: number, path: string) { super(`Connect API ${status} on ${path}`); }
@@ -84,32 +85,39 @@ export const api = {
   builders: (limit = 20) => get<Builder[]>(`/builders?limit=${limit}`),
   builder: (id: number) => maybe<BuilderDetail>(`/builders/${id}`),
   skills: () => get<Skill[]>("/skills"),
-  signedLines: (limit = 6) => get<SignedLine[]>(`/signed-lines?limit=${limit}`),
+  /* How credit, skills and credibility are worked out, as plain text (the numbers come from the backend's own rules). */
+  rules: () => get<RulesDoc>("/rules"),
 };
 
-/* The signed-in visitor, read in the browser from Connect (GET /api/public/me, with Connect's cookie). */
+/* The signed-in visitor, read in the browser from Connect (GET /api/public/me, with Connect's cookie).
+   `member`: verified at an open college (so they can message people). `unread`: what the badges count. */
 export type Account =
   | { signedIn: false }
   | { signedIn: true; id: number; name: string; picture: string | null; anonymous: boolean; onboarded: boolean; verified: boolean;
-      role: string; college: CollegeRef | null; earned: number; shipped: number; rank: Rank | null };
+      role: string; college: CollegeRef | null; earned: number; shipped: number; rank: Rank | null;
+      member: boolean; admin: boolean; unread: { inbox: number; messages: number } };
+export type Me = Extract<Account, { signedIn: true }>;
 
-/* Links into the Connect app itself. */
+/* Where things are. Account pages (sign in, profile, inbox, messages, settings, rules and the legal pages) live on this
+   site, so these are plain paths. `picture` and `workspace` are the two things that still point at the Connect app
+   (APP_URL): pictures are served from it, and project workspaces, clubs, commissions and funding have no page here yet. */
 export const app = {
-  home: `${APP_URL}/`,
-  signin: `${APP_URL}/signin`,
-  rules: `${APP_URL}/rules`,
-  privacy: `${APP_URL}/privacy`,
-  terms: `${APP_URL}/terms`,
-  cookies: `${APP_URL}/cookies`,
-  settings: `${APP_URL}/settings`,
-  messages: `${APP_URL}/messages`,
-  inbox: `${APP_URL}/inbox`,
-  profile: (id: number) => `${APP_URL}/u/${id}?tab=resume`,
-  progress: (id: number) => `${APP_URL}/u/${id}?tab=progress`,
-  me: (id: number) => `${APP_URL}/u/${id}`,
-  college: (slug: string) => `${APP_URL}/c/${slug}`,
+  home: "/",
+  signin: "/signin",
+  rules: "/rules",
+  privacy: "/privacy",
+  terms: "/terms",
+  cookies: "/cookies",
+  settings: "/settings",
+  messages: "/messages",
+  inbox: "/inbox",
+  me: "/me",
+  builder: (id: number) => `/builders/${id}`,
+  college: (slug: string) => `/colleges/${slug}`,
   /* Pictures are paths on Connect; sign-in provider photos (only ever your own, in the account menu) are full URLs. */
   picture: (src: string) => (/^https?:\/\//.test(src) ? src : `${APP_URL}${src}`),
+  /* A page of the Connect app itself, for work that has no page on this site. */
+  workspace: (path = "/") => `${APP_URL}${path}`,
 };
 
 export const year = (iso: string | null) => (iso ? new Date(iso).getFullYear() : "");

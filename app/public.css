@@ -1,5 +1,5 @@
 /* The public site (signed out): home, sign in, rules, colleges, privacy, terms.
-   Built with the apple-grade-web skill: centred hero, sections that alternate white and soft grey, rounded tiles,
+   Centred hero, sections that alternate white and soft grey, rounded tiles,
    pill buttons, the system font. Uses the same colour tokens as the app (globals.css), so light and dark both work. */
 
 body.guest { background: var(--surface); }

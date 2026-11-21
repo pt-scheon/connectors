@@ -20,7 +20,7 @@ export function EmailField({ colleges, initial }: { colleges: { name: string; do
         : known ? <span className="small ok-text">✓ {known.name}</span>
         : (
           <label className="field"><span>Your community&rsquo;s full name</span>
-            <input type="text" name="college_name" id="college_name" placeholder="e.g. Nirma University or Acme Labs" minLength={3} maxLength={80} required />
+            <input type="text" name="college_name" id="college_name" placeholder="e.g. Dhirubhai Ambani University or Acme Labs" minLength={3} maxLength={80} required />
             <small>@{d} is new on Connect. {isAcademic(d) ? "It is an academic domain, so your community opens as soon as you confirm the code." : "The Connect team checks new non-academic domains before the community opens."}</small>
           </label>
         ))}

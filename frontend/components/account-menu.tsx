@@ -1,35 +1,26 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import type { Account } from "@/lib/api";
 import { initials } from "./cover";
+import { useSession } from "./session";
 import { TierChip } from "./tier";
 
-/* The round picture at the top right. It asks Connect who is signed in (GET /api/public/me, sent with Connect's own
-   sign-in cookie), then opens a menu: your profile, rank, messages, settings and sign out; or sign in.
-   If Connect can't be reached, or the browser keeps its cookie from this site, it simply shows the signed-out menu. */
-export function AccountMenu({ appUrl }: { appUrl: string }) {
-  const [me, setMe] = useState<Account | null>(null); // null while asking
+/* The round picture at the top right. It shows who is signed in (the site-wide session, components/session.tsx), then
+   opens a menu: your profile, rank, messages, inbox, settings and sign out; or sign in. Every link goes to a page on this
+   site. The one exception is marked with ↗: the project workspace, which still lives in the Connect app. */
+export function AccountMenu() {
+  const { state, me, signOut, pic, appUrl } = useSession();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const box = useRef<HTMLDivElement>(null), btn = useRef<HTMLButtonElement>(null);
   const id = useId();
-  const link = (path: string) => `${appUrl}${path}`;
-  const pic = (src: string) => (/^https?:\/\//.test(src) ? src : link(src));
+  const pathname = usePathname();
 
-  useEffect(() => {
-    const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), 5000);
-    fetch(link("/api/public/me"), { credentials: "include", signal: ctl.signal, cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : { signedIn: false }))
-      .then((a: Account) => setMe(a?.signedIn ? a : { signedIn: false }))
-      .catch(() => setMe({ signedIn: false }))
-      .finally(() => clearTimeout(t));
-    return () => { clearTimeout(t); ctl.abort(); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appUrl]);
+  useEffect(() => setOpen(false), [pathname]);
 
   // Close on a click outside or Escape, and hand focus back to the button.
   useEffect(() => {
@@ -41,58 +32,64 @@ export function AccountMenu({ appUrl }: { appUrl: string }) {
     return () => { document.removeEventListener("mousedown", away); document.removeEventListener("keydown", esc); };
   }, [open]);
 
-  async function signOut() {
+  async function out() {
     setBusy(true); setError("");
-    try {
-      const r = await fetch(link("/api/public/signout"), { method: "POST", credentials: "include" });
-      if (!r.ok) throw new Error();
-      setMe({ signedIn: false });
-      setOpen(false);
-    } catch {
-      setError("Couldn't sign out from here.");
-    } finally { setBusy(false); }
+    const ok = await signOut();
+    setBusy(false);
+    if (ok) setOpen(false); else setError("Couldn’t sign out from here. Try again.");
   }
 
-  const signedIn = me?.signedIn === true ? me : null;
-  const face = signedIn
-    ? signedIn.picture ? <img src={pic(signedIn.picture)} alt="" referrerPolicy="no-referrer" /> : <span>{initials(signedIn.name)}</span>
+  const photo = me ? pic(me.picture) : null;
+  const face = me
+    ? photo ? <img src={photo} alt="" referrerPolicy="no-referrer" /> : <span>{initials(me.name)}</span>
     : <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="8.5" r="3.75" /><path d="M4.75 19.5c1.2-3.4 3.9-5.25 7.25-5.25s6.05 1.85 7.25 5.25" strokeLinecap="round" /></svg>;
+  const unread = me ? me.unread.inbox + me.unread.messages : 0;
+  const close = () => setOpen(false);
 
   return (
     <div className={`account${open ? " is-open" : ""}`} ref={box}>
-      <button ref={btn} type="button" className={`account-btn${signedIn ? " has-user" : ""}`} aria-haspopup="menu" aria-expanded={open} aria-controls={id}
-        aria-label={signedIn ? `Account: ${signedIn.name}` : "Account and sign in"} onClick={() => setOpen((v) => !v)} data-loading={me === null || undefined}>
+      <button ref={btn} type="button" className={`account-btn${me ? " has-user" : ""}`} aria-haspopup="menu" aria-expanded={open} aria-controls={id}
+        aria-label={me ? `Account: ${me.name}${unread ? `, ${unread} unread` : ""}` : "Account and sign in"} onClick={() => setOpen((v) => !v)} data-loading={state.status === "loading" || undefined}>
         {face}
+        {unread > 0 && <i className="account-pip" aria-hidden="true" />}
       </button>
       <div id={id} className="account-panel" role="menu" aria-hidden={!open} inert={!open}>
-        {signedIn ? (
+        {me ? (
           <>
             <div className="account-who">
               <span className="account-face" aria-hidden="true">{face}</span>
               <span className="account-id">
-                <b>{signedIn.name}</b>
-                <span className="mono muted">{signedIn.college?.name ?? (signedIn.onboarded ? "Connect" : "Finish setting up")}</span>
+                <b>{me.name}</b>
+                <span className="mono muted">{me.college?.name ?? (me.onboarded ? "Connect" : "Finish setting up")}</span>
               </span>
             </div>
-            {signedIn.rank && <TierChip tier={signedIn.rank} className="account-rank" />}
-            {signedIn.anonymous && <span className="mono muted account-note">You're anonymous. Others see this alias.</span>}
+            {me.rank && <TierChip tier={me.rank} className="account-rank" />}
+            {me.anonymous && <span className="mono muted account-note">You’re anonymous. Others see this alias.</span>}
+            {!me.onboarded ? (
+              <Link role="menuitem" className="account-cta" href="/onboarding" onClick={close}>Finish setting up</Link>
+            ) : !me.member && me.role === "student" ? (
+              <Link role="menuitem" className="account-cta" href="/onboarding" onClick={close}>Verify your college email</Link>
+            ) : null}
             <nav className="account-links" aria-label="Account">
-              <a role="menuitem" href={link(`/u/${signedIn.id}`)}>Your profile <span aria-hidden="true">↗</span></a>
-              {signedIn.rank && <a role="menuitem" href={link(`/u/${signedIn.id}?tab=progress`)}>Rank and progress <span aria-hidden="true">↗</span></a>}
-              <a role="menuitem" href={link("/messages")}>Messages <span aria-hidden="true">↗</span></a>
-              <a role="menuitem" href={link("/inbox")}>Inbox <span aria-hidden="true">↗</span></a>
-              <a role="menuitem" href={link("/settings")}>Settings <span aria-hidden="true">↗</span></a>
+              {me.onboarded && <Link role="menuitem" href="/me" onClick={close}>Your profile <span aria-hidden="true">→</span></Link>}
+              {me.rank && <Link role="menuitem" href="/me#progress" onClick={close}>Rank and progress <span aria-hidden="true">→</span></Link>}
+              {me.member && <Link role="menuitem" href="/messages" onClick={close}>Messages {me.unread.messages > 0 ? <b className="account-count">{me.unread.messages}</b> : <span aria-hidden="true">→</span>}</Link>}
+              {me.onboarded && <Link role="menuitem" href="/inbox" onClick={close}>Inbox {me.unread.inbox > 0 ? <b className="account-count">{me.unread.inbox}</b> : <span aria-hidden="true">→</span>}</Link>}
+              {me.onboarded && <Link role="menuitem" href="/settings" onClick={close}>Settings <span aria-hidden="true">→</span></Link>}
+              {me.onboarded && <Link role="menuitem" href="/feedback" onClick={close}>Feedback <span aria-hidden="true">→</span></Link>}
+              {me.member && <a role="menuitem" href={`${appUrl}/`} onClick={close}>Project workspace <span aria-hidden="true">↗</span></a>}
+              {me.admin && <a role="menuitem" href={`${appUrl}/admin`} onClick={close}>Admin <span aria-hidden="true">↗</span></a>}
             </nav>
-            <button role="menuitem" type="button" className="account-out" onClick={signOut} disabled={busy}>{busy ? "Signing out…" : "Sign out"}</button>
-            {error && <p className="account-error">{error} <a href={link("/settings")}>Open Connect</a></p>}
+            <button role="menuitem" type="button" className="account-out" onClick={out} disabled={busy}>{busy ? "Signing out…" : "Sign out"}</button>
+            {error && <p className="account-error">{error}</p>}
           </>
         ) : (
           <>
-            <p className="account-lead">{me === null ? "Checking…" : "You're not signed in."}</p>
-            <a role="menuitem" className="account-cta" href={link("/signin")}>Sign in to Connect</a>
+            <p className="account-lead">{state.status === "loading" ? "Checking…" : "You’re not signed in."}</p>
+            <Link role="menuitem" className="account-cta" href="/signin" onClick={close}>Sign in to Connect</Link>
             <nav className="account-links" aria-label="Account">
-              <a role="menuitem" href={link("/signin")}>Join with your college email <span aria-hidden="true">↗</span></a>
-              <a role="menuitem" href={link("/rules")}>How credit works <span aria-hidden="true">↗</span></a>
+              <Link role="menuitem" href="/signin" onClick={close}>Join with your college email <span aria-hidden="true">→</span></Link>
+              <Link role="menuitem" href="/rules" onClick={close}>How credit works <span aria-hidden="true">→</span></Link>
             </nav>
           </>
         )}

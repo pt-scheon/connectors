@@ -1,6 +1,5 @@
-/* Connect's design system follows the apple-grade-web skill (~/.claude/skills/apple-grade-web): the system font,
-   calm neutral surfaces, one blue accent, soft rounded shapes, pills for every selection, whisper-light shadows.
-   Values are measured from apple.com and Apple's Human Interface Guidelines.
+/* Connect's design system (DESIGN.md): the system font, calm neutral surfaces, one blue accent, soft rounded shapes,
+   pills for every selection, whisper-light shadows.
    waive 56: .convos-head is sticky inside the conversation list's own scroller, not the page. */
 :root{
   /* Dark */
@@ -12,7 +11,7 @@
   --shadow:none; --shadow-pop:0 12px 40px rgba(0,0,0,.6); --bar:rgba(22,22,23,.8);
   --display:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
   --body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
-  /* Figures and times use the text font with tabular numbers (as apple.com does); only code is monospace. */
+  /* Figures and times use the text font with tabular numbers; only code is monospace. */
   --mono:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
   --code:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --r-sm:10px; --r-md:14px; --r-lg:18px; --r-xl:28px; --r-pill:980px;
@@ -563,7 +562,7 @@ td{padding-block:11px}
 .chip.ok{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
 .meter.skillbar{flex:none;display:block;width:100%}
 
-/* ================= Apple-grade layer: rounded, calm, pills for selection ================= */
+/* ================= Finish layer: rounded, calm, pills for selection ================= */
 body{font:400 16px/1.47 var(--body);letter-spacing:-.01em;-webkit-font-smoothing:antialiased;background:var(--bg)}
 h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.02em;line-height:1.1}
 h1{font-size:2rem} h2{font-size:1.3rem;letter-spacing:-.015em} h3{font-size:1.06rem;letter-spacing:-.01em}
@@ -686,7 +685,7 @@ main:focus{outline:none}
 .smenu-links a:hover{color:var(--accent);text-decoration:none}
 .smenu-out .btn{width:100%}
 body.guest .smenu-panel{background:var(--pub-paper-2)}
-/* Apple-grade finish for components added later */
+/* The same finish for components added later */
 .skip{border-radius:var(--r-pill)}
 @media (max-width:40rem){
   .bottom-nav{background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
@@ -711,13 +710,13 @@ body.guest .smenu-panel{background:var(--pub-paper-2)}
 .ov-bar{border-radius:var(--r-pill);border:0;background:var(--pill);overflow:hidden}
 .ov-bar i{border-radius:var(--r-pill)}
 .card.invite{background:linear-gradient(var(--accent-soft),var(--accent-soft)),var(--surface)}
-/* Figures in tables use the text font with lining numbers, as apple.com does; only code is monospace. */
+/* Figures in tables use the text font with lining numbers; only code is monospace. */
 td.n,th.n{font-family:var(--body)}
 .linkbtn{font-family:var(--body);font-weight:500}
 
-/* ================= More colour: Apple's system palette as accents =================
-   Fills are Apple's system colours; the -t versions are the deeper shades Apple uses for text on light
-   backgrounds, so coloured words keep 4.5:1. Dark mode uses the brighter dark-appearance colours. */
+/* ================= More colour: a bright palette as accents =================
+   Fills are the base colours; the -t versions are deeper shades for text on light backgrounds,
+   so coloured words keep 4.5:1. Dark mode uses the brighter dark-appearance colours. */
 :root{
   --blue:#0a84ff; --green:#30d158; --orange:#ff9f0a; --purple:#bf5af2; --pink:#ff375f; --teal:#40c8e0; --indigo:#5e5ce6; --yellow:#ffd60a; --red:#ff453a;
   --blue-t:#409cff; --green-t:#30d158; --orange-t:#ffb340; --purple-t:#da8fff; --pink-t:#ff6482; --teal-t:#5de6ff; --indigo-t:#7d7aff; --red-t:#ff6961;
@@ -790,7 +789,7 @@ a.card .row.nowrap{gap:12px}
 .linkbtn{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer}
 .linkbtn:hover{text-decoration:underline}
 
-/* ---------- Touch screens: every control at least about 44px to tap (Apple's guideline) ---------- */
+/* ---------- Touch screens: every control at least about 44px to tap (the usual touch-target size) ---------- */
 @media (pointer:coarse){
   .tabs a,.tabs button{min-height:44px;display:inline-flex;align-items:center}
   .filters a,.filters button{min-height:40px;display:inline-flex;align-items:center}
@@ -974,24 +973,3 @@ body:not(.guest) .foot{background:transparent}
 .rank-chip:hover{text-decoration:none;filter:brightness(1.08)}
 /* Project icons are images now: the team's own, or a cover drawn from the name */
 img.picon.pimg{object-fit:cover;background:var(--sunk);padding:0}
-
-/* ================= Showcase skin (frontend/): near-black warmed with red, one red accent, light display type =================
-   Laid over every theme, so the app reads as the same product as the public showcase. */
-:root:root:root{
-  color-scheme: dark;
-  --bg:#0f0000; --surface:#1c0a09; --surface2:#24100e; --sunk:#160605; --pill:#2c1513; --pill-hover:#3b1d1a;
-  --ink:#ffffff; --muted:#b8a9a7; --line:#3a1f1c; --line2:#4b2a26; --silver:#9c8b89;
-  --accent:#ff3b2f; --accent-ink:#ffffff; --accent-soft:rgba(255,59,47,.18);
-  --mark:#ff3b2f; --mark-ink:#ffffff; --info:#ff3b2f;
-  --shadow:none; --shadow-pop:0 14px 44px rgba(0,0,0,.6); --bar:rgba(15,0,0,.78);
-}
-html:root body{
-  background:
-    radial-gradient(90% 55% at 20% -12%, rgba(255,60,40,.38), transparent 62%),
-    radial-gradient(70% 40% at 100% 0%, rgba(200,20,10,.22), transparent 60%),
-    var(--bg);
-  background-attachment: fixed;
-}
-html:root h1{ font-weight:300; letter-spacing:-.045em; }
-html:root h2{ font-weight:400; letter-spacing:-.03em; }
-html:root ::selection{ background:#ff0000; color:#fff; }

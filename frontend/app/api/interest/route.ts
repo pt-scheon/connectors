@@ -1,5 +1,5 @@
 /* Same-origin proxy so the browser only ever talks to this site. Forwards to the Connect backend's stub. */
-const API = (process.env.CONNECT_API_URL || "http://localhost:3000").replace(/\/$/, "");
+const API = (process.env.CONNECT_API_URL || "http://localhost:4000").replace(/\/$/, "");
 
 export async function POST(req: Request) {
   const body = await req.text();

@@ -3,10 +3,12 @@ import Link from "next/link";
 export const metadata = { title: "Cookies", description: "Every cookie Connect sets, what it is for and how long it lasts." };
 
 /* Every cookie the site sets. Keep this in step with the code: lib/auth.ts (sid), app/settings-menu.tsx (theme),
-   app/actions.ts and the sign-in routes (pending, td, oauth_state), lib/consent.ts (consent). */
+   app/actions.ts and the sign-in routes (pending, td, oauth_state), lib/return-to.ts (oauth_next), lib/consent.ts (consent). The showcase has the same list
+   (frontend/app/(legal)/cookies/page.tsx); keep both in step. */
 const COOKIES: [name: string, kind: string, what: string, lasts: string][] = [
   ["sid", "Necessary", "Keeps you signed in. Signed, so it cannot be forged.", "30 days, or until you sign out"],
   ["oauth_state", "Necessary", "Protects the sign-in with Google or LinkedIn from being hijacked.", "10 minutes"],
+  ["oauth_next", "Necessary", "Remembers which page of the showcase site to bring you back to after Google or LinkedIn.", "10 minutes"],
   ["pending", "Necessary", "Remembers that you passed the first sign-in step while you type an emailed code.", "10 minutes"],
   ["td", "Necessary", "Remembers a device you chose to trust, so it is not asked for a code again.", "90 days"],
   ["theme", "Preference", "Light, dark or device appearance, if you picked one.", "1 year"],

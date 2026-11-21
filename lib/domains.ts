@@ -30,7 +30,7 @@ export function isAcademic(domain: string) {
 }
 
 /* True when an address on `domain` belongs to a college that owns `owned`.
-   Exact match or a subdomain of it: x@cse.nirmauni.ac.in counts for nirmauni.ac.in, x@fakenirmauni.ac.in does not. */
+   Exact match or a subdomain of it: x@cse.dau.ac.in counts for dau.ac.in, x@fakedau.ac.in does not. */
 export const onDomain = (domain: string, owned: string) => domain === owned || domain.endsWith("." + owned);
 
 /* The college an email domain belongs to, picking the most specific match. */
@@ -46,7 +46,7 @@ export function slugify(s: string) {
   return s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "college";
 }
 
-/* A readable first guess at a name from a domain: nirmauni.ac.in becomes "Nirmauni". */
+/* A readable first guess at a name from a domain: dau.ac.in becomes "Dau". */
 export function guessName(domain: string) {
   const w = baseDomain(domain).split(".")[0] ?? domain;
   return w.charAt(0).toUpperCase() + w.slice(1);

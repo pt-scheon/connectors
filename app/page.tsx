@@ -18,11 +18,7 @@ import { ShareLink } from "./messages/media";
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ f?: string }> }) {
   const me = await currentUser();
-  // Visitors who aren't signed in get the public showcase (frontend/) when it is deployed, the site's new front page.
-  if (!me) {
-    if (process.env.SHOWCASE_URL) redirect(process.env.SHOWCASE_URL);
-    return <Landing />;
-  }
+  if (!me) return <Landing />;
   if (!me.onboarded || !isMember(me)) redirect("/onboarding");
   const cid = me.college_id, college = collegeById(cid)!;
   const S = standings(), mine = S.get(me.id) ?? EMPTY;

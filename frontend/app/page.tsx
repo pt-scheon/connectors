@@ -3,7 +3,6 @@ import { api, app, inr, pad2 } from "@/lib/api";
 import { Clock } from "@/components/clock";
 import { ProjectCard } from "@/components/project-card";
 import { BuilderList } from "@/components/builder-list";
-import { SignedCarousel } from "@/components/carousel";
 import { InterestForm } from "@/components/interest-form";
 import { Words } from "@/components/words";
 
@@ -11,8 +10,8 @@ import { Words } from "@/components/words";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [o, projects, colleges, builders, lines] = await Promise.all([
-    api.overview(), api.projects({ limit: 6 }), api.colleges(), api.builders(6), api.signedLines(6),
+  const [o, projects, colleges, builders] = await Promise.all([
+    api.overview(), api.projects({ limit: 6 }), api.colleges(), api.builders(6),
   ]);
   const r = o.rules;
   const steps = [
@@ -54,7 +53,7 @@ export default async function Home() {
           <Words text="Connect is a network of colleges where students build projects together. Each college is its own private space. " />
           <em><Words text="Credit comes only from projects that ship, and teammates and outside reviewers decide what each person earned." /></em>
         </p>
-        <div className="sec-end"><a className="btn-line" href={app.rules}>Read the credit rules <span aria-hidden="true">→</span></a></div>
+        <div className="sec-end"><Link className="btn-line" href={app.rules}>Read the credit rules <span aria-hidden="true">→</span></Link></div>
       </section>
 
       {/* 4 · How it works (numbered list) */}
@@ -98,15 +97,9 @@ export default async function Home() {
         <BuilderList builders={builders} />
       </section>
 
-      {/* 7 · Signed lines carousel */}
-      <section id="signed" className="sec red-bg">
-        <h2 className="mega" data-reveal>Signed, not said</h2>
-        <SignedCarousel lines={lines} />
-      </section>
-
-      {/* 8 · Contact / join */}
+      {/* 7 · Contact / join */}
       <section id="contact" className="sec dark contact">
-        <div className="sec-end start"><a className="btn-line mono-btn" href={app.signin}>Join with your college email <span aria-hidden="true">→</span></a></div>
+        <div className="sec-end start"><Link className="btn-line mono-btn" href={app.signin}>Join with your college email <span aria-hidden="true">→</span></Link></div>
         <div className="contact-grid">
           <div>
             <h2 className="mono-label">Join</h2>
@@ -121,10 +114,10 @@ export default async function Home() {
           <div>
             <h2 className="mono-label">Read</h2>
             <ul className="contact-list">
-              <li><a href={app.rules}>Credit rules ↗</a></li>
-              <li><a href={app.privacy}>Privacy ↗</a></li>
-              <li><a href={app.terms}>Terms ↗</a></li>
-              <li><a href={app.cookies}>Cookies ↗</a></li>
+              <li><Link href={app.rules}>Credit rules →</Link></li>
+              <li><Link href={app.privacy}>Privacy →</Link></li>
+              <li><Link href={app.terms}>Terms →</Link></li>
+              <li><Link href={app.cookies}>Cookies →</Link></li>
             </ul>
           </div>
           <div>
